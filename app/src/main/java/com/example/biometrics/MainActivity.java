@@ -1,8 +1,10 @@
 package com.example.biometrics;
 
+import android.app.KeyguardManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,13 +14,31 @@ import androidx.fragment.app.FragmentActivity;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
+    private static int CODE_AUTHENTICATION_VERIFICATION = 241;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        GotoLockScreen();
+        //GotoBioMetrics();
+    }
 
+    private void GotoLockScreen() {
+       /* KeyguardManager km = (KeyguardManager)getSystemService(KEYGUARD_SERVICE);
+        Intent i = km.createConfirmDeviceCredentialIntent("title","description");*/
+        KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+        if (km.isKeyguardSecure()) {
+
+            Intent i = km.createConfirmDeviceCredentialIntent("Authentication required", "password");
+            startActivityForResult(i, CODE_AUTHENTICATION_VERIFICATION);
+        } else {
+            Toast.makeText(this, "No any security setup done by user(pattern or password or pin or fingerprint", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void GotoBioMetrics() {
         Executor executor = Executors.newSingleThreadExecutor();
 
         final FragmentActivity activity = this;
